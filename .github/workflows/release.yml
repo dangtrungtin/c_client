@@ -1,29 +1,26 @@
-on:
-  push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+#on:
+#  push:
+#    tags:
+#      - "v*"
 
-name: Create Release
+on: create
 
+name: Release
 jobs:
-  build:
-    name: Create Release
+  release:
+    name: Release GitHub Actions
     runs-on: ubuntu-latest
+    env:
+      CENTOS_VERSION: 7
+      OPENSUSE_VERSION: 15.1
+      GRIDDB_NOTIFICATION_ADDRESS: "239.0.0.1"
+      GRIDDB_NOTIFICATION_PORT: "31999"
+      GRIDDB_CLUSTER_NAME: "griddbDocker"
+      GRIDDB_USERNAME: "admin"
+      GRIDDB_PASSWORD: "admin"
+      DOCKER_CONTAINER_NAME_CENTOS: "griddbCentosDocker"
+      DOCKER_CONTAINER_NAME_OPENSUSE: "griddbOpensuseDocker"
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
-          draft: false
-          prerelease: false
+      - uses: actions/checkout@v1
+      - name: Build package for CentOS
+        run: ./.github/workflows/build_centos_docker.sh
